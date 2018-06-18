@@ -1,7 +1,7 @@
 package gdax
 
 import (
-	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -19,7 +19,7 @@ type Client struct {
 	Key        string
 	Pass       string
 	HTTPClient *http.Client
-	WSConn     websocket.Conn
+	WSConn     *websocket.Conn
 }
 
 // NewClient returns a GDAX client
@@ -33,26 +33,35 @@ func NewClient(secret, key, pass string) *Client {
 	return &client
 }
 
+// Connect connects the client to GDAX websocket
+func (c *Client) Connect() {
+	var dialer websocket.Dialer
+
+	conn, _, err := dialer.Dial(wsURL, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.WSConn = conn
+}
+
 // Subscribe is a method to sub or unsub to a orderbook via a GDAX websocket with a given
 // product e.g 'BTC-USD' 'ETH-BTC'
-func (c *Client) Subscribe(product string, unsubscribe bool) error {
-	var message SubscribeMessage
+func (c *Client) Subscribe(products []string) error {
 
-	if unsubscribe {
-		message = SubscribeMessage{"unsubscribe", product}
-	} else {
-		message = SubscribeMessage{"subscribe", product}
+	subscribe := Message{
+		Type: "subscribe",
+		Channels: []MessageChannel{
+			MessageChannel{
+				Name:       "ticker",
+				ProductIDs: products,
+			},
+		},
 	}
 
-	json, err := json.Marshal(message)
-	if err != nil {
-		return err
-	}
-
-	err = c.WSConn.WriteMessage(websocket.TextMessage, json)
-	if err != nil {
+	if err := c.WSConn.WriteJSON(subscribe); err != nil {
 		return err
 	}
 
 	return nil
+
 }
