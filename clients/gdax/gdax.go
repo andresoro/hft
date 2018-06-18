@@ -1,6 +1,10 @@
-package client
+package gdax
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gorilla/websocket"
+)
 
 var (
 	baseURL = "https://api.gdax.com"
@@ -14,4 +18,16 @@ type GDAXClient struct {
 	Key        string
 	Pass       string
 	HTTPClient *http.Client
+	WSConn     websocket.Conn
+}
+
+// NewClient returns a GDAX client
+func NewClient(secret, key, pass string) *GDAXClient {
+	client := GDAXClient{
+		Secret: secret,
+		Key:    key,
+		Pass:   pass,
+	}
+
+	return &client
 }
