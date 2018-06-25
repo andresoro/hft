@@ -23,7 +23,7 @@ func main() {
 			fmt.Println(err.Error())
 			break
 		}
-		fmt.Println(msg.Side, msg.Price)
+		fmt.Println("Ask ", msg.BestAsk, msg.BestBid)
 
 	}
 }
