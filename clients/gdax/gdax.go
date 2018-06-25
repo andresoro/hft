@@ -46,13 +46,13 @@ func (c *Client) Connect() {
 
 // Subscribe is a method to sub or unsub to a orderbook via a GDAX websocket with a given
 // product e.g 'BTC-USD' 'ETH-BTC'
-func (c *Client) Subscribe(products []string) error {
+func (c *Client) Subscribe(channelType string, products []string) error {
 
 	subscribe := Message{
 		Type: "subscribe",
 		Channels: []MessageChannel{
 			MessageChannel{
-				Name:       "ticker",
+				Name:       channelType,
 				ProductIDs: products,
 			},
 		},

@@ -13,7 +13,7 @@ func main() {
 
 	// connect to WS with desired product
 	client.Connect()
-	client.Subscribe(products)
+	client.Subscribe("level2", products)
 
 	// infinite for loop which reads incoming messages
 	var msg gdax.Message
